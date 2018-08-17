@@ -1,6 +1,7 @@
 from django.db import models
 from django.db.models.signals import pre_save, post_save
 from .utils import unique_slug_generator
+from .validators import validate_category
 # Create your models here.
 class RestaurantLocation(models.Model):
     # Name of Restaurant
@@ -8,7 +9,7 @@ class RestaurantLocation(models.Model):
     # Location of Restaurant
     location = models.CharField(max_length=120,null=True,blank=True)
     # Category of Restaurant
-    category = models.CharField(max_length=120, null=True, blank=True)
+    category = models.CharField(max_length=120, null=True, blank=True, validators=[validate_category,])
     # Date post added to db
     timestamp = models.DateTimeField(auto_now_add=True,)
     # Date post updated
@@ -25,10 +26,10 @@ class RestaurantLocation(models.Model):
 
 
 def rl_pre_save_reciever(sender, instance, *args, **kwargs):
-
+    instance.category = instance.category.capitalize()
     if not instance.slug:
         instance.slug = unique_slug_generator(instance)
-        instance.save()
+
 
 
 # def rl_post_save_reciever(sender, instance, created, *args, **kwargs):
