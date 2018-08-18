@@ -5,8 +5,10 @@
 {% block content %}
 <h1>Add Restaurant</h1>
 
+{% if form.errors.non_field_errors %}
+{{ form.errors.non_field_errors }}
+{% endif %}
 <form method='POST'> {% csrf_token %}
-
     {{ form.as_p }}
     <button type='submit'>Save</button>
 </form>

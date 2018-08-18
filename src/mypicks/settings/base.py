@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'menus',
     'restaurants'
 ]
 
@@ -51,6 +52,7 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'mypicks.urls'
+LOGIN_URL = '/login/'
 
 TEMPLATES = [
     {
