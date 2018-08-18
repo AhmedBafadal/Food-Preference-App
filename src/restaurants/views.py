@@ -39,7 +39,7 @@ class RestaurantCreateView(LoginRequiredMixin, CreateView):
 class RestaurantUpdateView(LoginRequiredMixin, UpdateView):
     form_class = RestaurantLocationCreateForm
     login_url = '/login/'
-    template_name = 'form.html'
+    template_name = 'restaurants/detail-update.html'
     #success_url = "/restaurants/"
 
     def get_context_data(self, *args, **kwargs):
@@ -49,5 +49,6 @@ class RestaurantUpdateView(LoginRequiredMixin, UpdateView):
         context['title'] = f'Update Restaurant: {name}' # Obtaining the restaurant title
         return context
 
+    # Need get_queryset in UpdateView because view needs to get the detail item
     def get_queryset(self):
         return RestaurantLocation.objects.filter(owner=self.request.user)
