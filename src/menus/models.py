@@ -1,5 +1,7 @@
 from django.db import models
 from django.conf import settings
+from django.core.urlresolvers import reverse
+
 from restaurants.models import RestaurantLocation
 # Create your models here.
 
@@ -14,12 +16,17 @@ class Item(models.Model):
     # Menu ingredients
     contents = models.TextField(help_text='Please seperate each ingredient by comma.')
     # Menu ingredients to exclude
-    excludes = models.TextField(blank=True, null=True,help_text='Please seperate each ingredient by comma.')
+    excludes = models.TextField(blank=True, null=True, help_text='Please seperate each ingredient by comma.')
     # Allowing user to set menu to be visible by others or private
     public = models.BooleanField(default=True)
     # Time
     timestamp       = models.DateTimeField(auto_now_add=True)
     updated         = models.DateTimeField(auto_now=True)
+
+
+    def get_absolute_url(self): #get_absolute_url
+    #return f"/restaurants/{self.slug}" 
+        return reverse('menus:detail', kwargs={'pk': self.pk})
 
     class Meta:
         # Ordered by most recent
