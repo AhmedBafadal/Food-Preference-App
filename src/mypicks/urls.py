@@ -7,8 +7,7 @@ from django.contrib.auth.views import LoginView
 
 
 from restaurants.views import (
-    restaurant_createview,
-    restaurant_listview,
+
     RestaurantListView,
     RestaurantDetailView,
     RestaurantCreateView
