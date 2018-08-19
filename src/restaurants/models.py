@@ -2,11 +2,37 @@ from django.conf import settings
 from django.db import models
 from django.db.models.signals import pre_save, post_save
 from django.core.urlresolvers import reverse
-
+from django.db.models import Q
 from .utils import unique_slug_generator
 from .validators import validate_category
 
 User = settings.AUTH_USER_MODEL
+
+# Custom queryset
+class RestaurantLocationQuerySet(models.query.QuerySet):
+    def search(self, query):# same as: RestaurantLocation.objects.all().search() or #RestaurantLocaiton.objects.filter(something).search()
+        if query:
+            query = query.strip()
+            return self.filter(
+                Q(name__icontains=query)|
+                Q(location__icontains=query)|
+                Q(category__icontains=query)|
+                Q(category__iexact=query)|
+                Q(item__name__icontains=query)|
+                Q(item__contents__icontains=query)
+                ).distinct()
+        return self
+
+# Model manager for queries
+class RestaurantLocationManager(models.Manager):
+    # Overiding the existing queryset, using the same database
+    def get_queryset(self):
+        return RestaurantLocationQuerySet(self.model,using=self._db) #Need to use self.model here
+    
+    def search(self, query): # same as: RestaurantLocation.objects.seach()
+        return self.get_queryset().search(query)
+
+    
 
 class RestaurantLocation(models.Model):
     owner           = models.ForeignKey(User) # class_instance.model_set.all()
@@ -17,6 +43,8 @@ class RestaurantLocation(models.Model):
     updated         = models.DateTimeField(auto_now=True)
     slug            = models.SlugField(null=True, blank=True)
     #my_date_field   = models.DateField(auto_now=False, auto_now_add=False)
+
+    objects = RestaurantLocationManager() # Appended to object manager
     def __str__(self):
         return self.name
 
