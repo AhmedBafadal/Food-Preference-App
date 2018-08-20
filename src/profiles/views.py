@@ -9,19 +9,14 @@ from .models import Profile
 # Create your views here.
 User = get_user_model()
 
-# Note!! remember to make a template tag filter after the below endpoint!
+# Note!! remember to make a template tag filter after the ProfileFollowToggle endpoint!
 class ProfileFollowToggle(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
-        # print(request.data)
-        # print(request.POST)
-        user_to_toggle = request.POST.get('username')
-        print(user_to_toggle)
-        profile_ = Profile.objects.get(user__username__iexact=user_to_toggle)
-        user = request.user
-        if user in profile_.followers.all():
-            profile_.followers.remove(user)
-        else:
-            profile_.followers.add()
+
+        username_to_toggle = request.POST.get('username')
+        profile_, is_following = Profile.objects.toggle_follow(request.user, username_to_toggle)
+        # print(is_following)
+   
 
         return redirect(f'/u/{profile_.user.username}/')
 
@@ -46,10 +41,9 @@ class ProfileDetailView(DetailView):
             is_following = True
         context['is_following'] = is_following
         query = self.request.GET.get('q')
-        items_exists = Item.objects.filter(user=user)
+        items_exists = Item.objects.filter(user=user).exists()
         qs = RestaurantLocation.objects.filter(owner=user).search(query)  # Queryset based on owner
          
         if items_exists and qs.exists():
             context['locations'] = qs
-    
         return context
