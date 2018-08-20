@@ -32,6 +32,7 @@ class ProfileDetailView(DetailView):
         return get_object_or_404(User, username__iexact=username, is_active=True)
     
     def get_context_data(self,*args, **kwargs):
+        # Obtaining context data related to the specific user
         context = super(ProfileDetailView, self).get_context_data(*args, **kwargs)
         # print(context)
         user = context['user']         #self.get_object()

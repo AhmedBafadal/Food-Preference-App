@@ -1,16 +1,30 @@
 from django.shortcuts import render
-from django.views.generic import ListView, DetailView, CreateView, UpdateView
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, View
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from .models import Item
 from .forms import ItemForm
 # Create your views here.
 
-class ItemListView(ListView):
+# This is to create a feed based on who the user logged in has followed 
+class HomeView(View):
+    def get(self,request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return render(request, "home.html", {})
+        user = request.user
+        # Obtaining user ids
+        is_following_user_ids = [x.user_id for x in user.is_following.all()]#User profiles being followed
+        # Obtaining items, based off of user ids
+        qs = Item.objects.filter(user__id__in=is_following_user_ids, public=True).order_by('-updated')[:3]
+        return render(request, "menus/home-feed.html", {'object_list':qs})
+
+
+# Below views are for a user viewing and creating their own items
+class ItemListView(LoginRequiredMixin, ListView):
     def get_queryset(self):
         return Item.objects.filter(user=self.request.user)
 
-class ItemDetailView(DetailView):
+class ItemDetailView(LoginRequiredMixin, DetailView):
     def get_queryset(self):
         return Item.objects.filter(user=self.request.user)
 
