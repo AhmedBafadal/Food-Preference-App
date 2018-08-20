@@ -13,17 +13,17 @@ User = get_user_model()
 class ProfileFollowToggle(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         # print(request.data)
-        print(request.POST)
+        # print(request.POST)
         user_to_toggle = request.POST.get('username')
         print(user_to_toggle)
-        profile_ = Profile.objects.get(username__iexact=user_to_toggle)
+        profile_ = Profile.objects.get(user__username__iexact=user_to_toggle)
         user = request.user
         if user in profile_.followers.all():
             profile_.followers.remove(user)
         else:
             profile_.followers.add()
 
-        return redirect('/u/cfe/')
+        return redirect(f'/u/{profile_.user.username}/')
 
 
 
@@ -40,6 +40,11 @@ class ProfileDetailView(DetailView):
         context = super(ProfileDetailView, self).get_context_data(*args, **kwargs)
         # print(context)
         user = context['user']         #self.get_object()
+        # Following the user
+        is_following = False
+        if user.profile in self.request.user.is_following.all():
+            is_following = True
+        context['is_following'] = is_following
         query = self.request.GET.get('q')
         items_exists = Item.objects.filter(user=user)
         qs = RestaurantLocation.objects.filter(owner=user).search(query)  # Queryset based on owner
