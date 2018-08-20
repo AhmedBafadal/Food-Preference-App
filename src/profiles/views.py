@@ -1,11 +1,19 @@
 from django.contrib.auth import get_user_model
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic import DetailView
 from django.http import Http404
 from restaurants.models import RestaurantLocation
 from menus.models import Item
 # Create your views here.
 User = get_user_model()
+
+# Note!! remember to make a template tag filter after the below endpoint!
+class ProfileFollowToggle(View):
+    def post(self, request, *args, **kwargs):
+        print(request.data)
+        print(request.POST)
+        return redirect('/u/cfe/')
+
 
 
 class ProfileDetailView(DetailView):
