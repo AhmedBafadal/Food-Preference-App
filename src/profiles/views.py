@@ -1,17 +1,28 @@
 from django.contrib.auth import get_user_model
 from django.shortcuts import render, get_object_or_404, redirect
-from django.views.generic import DetailView
+from django.views.generic import DetailView, View
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import Http404
 from restaurants.models import RestaurantLocation
 from menus.models import Item
+from .models import Profile
 # Create your views here.
 User = get_user_model()
 
 # Note!! remember to make a template tag filter after the below endpoint!
-class ProfileFollowToggle(View):
+class ProfileFollowToggle(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
-        print(request.data)
+        # print(request.data)
         print(request.POST)
+        user_to_toggle = request.POST.get('username')
+        print(user_to_toggle)
+        profile_ = Profile.objects.get(username__iexact=user_to_toggle)
+        user = request.user
+        if user in profile_.followers.all():
+            profile_.followers.remove(user)
+        else:
+            profile_.followers.add()
+
         return redirect('/u/cfe/')
 
 
