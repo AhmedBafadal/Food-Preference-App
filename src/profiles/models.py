@@ -24,6 +24,7 @@ class Profile(models.Model):
     user = models.OneToOneField(User) # 
     followers = models.ManyToManyField(User, related_name='is_following', blank=True)
     # following = models.ManyToManyField(User, related_name='is_following', blank=True)
+    activation_key = models.CharField(max_length=120, blank=True, null=True)
     # Profile not acitvated by default, because the user is required to sign up online
     activated = models.BooleanField(default=False)
     timestamp = models.DateTimeField(auto_now_add=True)
@@ -33,6 +34,16 @@ class Profile(models.Model):
 
     def __str__(self):
         return self.user.username
+
+    def send_activation_email(self):
+        print('Activation!')
+        # print(user.profile)
+        if not self.activated:
+            self.activation_key = 'somekey' #gen key
+            self.save()
+            sent_mail = False
+            return sent_mail
+        
     
 
 
