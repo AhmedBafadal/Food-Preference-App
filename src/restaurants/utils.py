@@ -2,10 +2,7 @@ import random
 import string
 
 from django.utils.text import slugify
-'''
-random_string_generator is located here:
-http://joincfe.com/blog/random-string-generator-in-python/
-'''
+
 
 DONT_USE = ['create']
 def random_string_generator(size=10, chars=string.ascii_lowercase + string.digits):
